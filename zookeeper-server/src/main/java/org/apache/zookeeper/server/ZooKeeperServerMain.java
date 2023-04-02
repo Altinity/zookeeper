@@ -19,9 +19,13 @@
 package org.apache.zookeeper.server;
 
 import java.io.IOException;
+import java.security.Security;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.management.JMException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.zookeeper.audit.ZKAuditProvider;
 import org.apache.zookeeper.jmx.ManagedUtil;
@@ -35,8 +39,11 @@ import org.apache.zookeeper.server.auth.ProviderRegistry;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog.DatadirException;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
+import org.apache.zookeeper.server.quorum.QuorumStats.Provider;
 import org.apache.zookeeper.server.util.JvmPauseMonitor;
 import org.apache.zookeeper.util.ServiceUtils;
+import org.bouncycastle.crypto.CryptoServicesRegistrar;
+import org.bouncycastle.crypto.fips.FipsStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +128,26 @@ public class ZooKeeperServerMain {
      */
     public void runFromConfig(ServerConfig config) throws IOException, AdminServerException {
         LOG.info("Starting server");
+
+
         FileTxnSnapLog txnLog = null;
         try {
+            // FIPS startup and test. 
+            LOG.info("FIPS: FipsStatus isReady: " + FipsStatus.isReady());
+            LOG.info("FIPS: FipsStatus status message: " + FipsStatus.getStatusMessage());
+            LOG.info("FIPS: isInApprovedOnlyMode: " + CryptoServicesRegistrar.isInApprovedOnlyMode());
+
+            // List currently installed providers. 
+            LOG.info("FIPS: Java security providers");
+            java.security.Provider[] providers = Security.getProviders();
+            for (int i = 0; i < providers.length; i++) {
+                LOG.info("FIPS: [" + i + "] " + providers[i]);
+            }
+
+            // List algorithms for keystore and trust manager. 
+            LOG.info("FIPS: KeyManagerFactory default algorithm: " + KeyManagerFactory.getDefaultAlgorithm());
+            LOG.info("FIPS: TrustManagerFactory default algorithm: " + TrustManagerFactory.getDefaultAlgorithm());
+
             try {
                 metricsProvider = MetricsProviderBootstrap.startMetricsProvider(
                     config.getMetricsProviderClassName(),

@@ -1,0 +1,11 @@
+# Overrides to use Bouncy Castle FIPS crypto. 
+
+# Key and trust manager factory algorithms. 
+ssl.KeyManagerFactory.algorithm=PKIX
+ssl.TrustManagerFactory.algorithm=PKIX
+
+# Set providers. 
+security.provider.1=org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider
+security.provider.2=org.bouncycastle.jsse.provider.BouncyCastleJsseProvider BCFIPS
+security.provider.3=SUN
+security.provider.4=SunJCE
