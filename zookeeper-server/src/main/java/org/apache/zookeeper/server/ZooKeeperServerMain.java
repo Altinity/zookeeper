@@ -112,7 +112,7 @@ public class ZooKeeperServerMain {
 
         try {
             // If we are running in fips mode, load and invoke FIPS configuration.
-            String fips_enabled = System.getProperties().getProperty("fips_enabled");
+            String fips_enabled = System.getProperties().getProperty("fips.enabled");
             if (fips_enabled == null) {
                 LOG.info("FIPS is not enabled; skipping configuration");
             } else {

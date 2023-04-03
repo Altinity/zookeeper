@@ -55,7 +55,7 @@ EXPOSE 2281 2888 3888 8080
 
 ENV PATH=$PATH:/$DISTRO_NAME/bin \
     ZOOCFGDIR=$ZOO_CONF_DIR \
-    SERVER_JVMFLAGS="-Dfips_enabled=true -Dorg.bouncycastle.fips.approved_only=true -Djava.security.properties=$ZOOCFGDIR/conf/fips.java.security"
+    SERVER_JVMFLAGS="-Dfips.enabled=true -Dorg.bouncycastle.fips.approved_only=true -Djava.security.properties=$ZOOCFGDIR/conf/fips.java.security"
 
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
