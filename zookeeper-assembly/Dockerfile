@@ -1,6 +1,9 @@
 # Build a FIPS-enabled ZooKeeper. 
 FROM eclipse-temurin:11-jre
 
+ARG SHORT_DISTRO_NAME=zookeeper-3.7.1-fips
+ARG DISTRO_NAME=apache-zookeeper-3.7.1-bin
+
 ENV ZOO_CONF_DIR=/conf \
     ZOO_DATA_DIR=/data \
     ZOO_DATA_LOG_DIR=/datalog \
@@ -36,9 +39,6 @@ RUN set -eux; \
 # Verify that gosu binary works
     gosu nobody true
 
-ARG SHORT_DISTRO_NAME=zookeeper-3.7.1-fips
-ARG DISTRO_NAME=apache-zookeeper-3.7.1-bin
-
 # Get ZooKeeper build, untar, and clean up. 
 COPY target/"$DISTRO_NAME.tar.gz" .
 RUN set -eux; \
@@ -54,6 +54,7 @@ VOLUME ["$ZOO_DATA_DIR", "$ZOO_DATA_LOG_DIR", "$ZOO_LOG_DIR"]
 EXPOSE 2281 2888 3888 8080
 
 ENV PATH=$PATH:/$DISTRO_NAME/bin \
+    ZOOKEEPER_HOME=/$DISTRO_NAME \
     ZOOCFGDIR=$ZOO_CONF_DIR \
     SERVER_JVMFLAGS="-Dfips.enabled=true -Dorg.bouncycastle.fips.approved_only=true -Djava.security.properties=$ZOOCFGDIR/conf/fips.java.security"
 
